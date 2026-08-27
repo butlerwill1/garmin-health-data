@@ -1,0 +1,16 @@
+[paths]
+# Keep the real source files outside Git-tracked directories.
+garmin_export_dir = "input/garmin"
+daylio_export_csv = "input/daylio_export.csv"
+
+[analysis]
+timezone = "Europe/London"
+min_observations = 60
+min_group_size = 20
+max_lag_days = 7
+bootstrap_resamples = 2000
+block_size_days = 7
+
+[daylio]
+# These are invented example tags. Put only tags you want analysed in config.local.toml.
+approved_activity_tags = ["Demo outdoors", "Demo social"]

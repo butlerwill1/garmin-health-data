@@ -1,0 +1,23 @@
+# Private source exports and local configuration
+garmin_data_download/
+daylio_export_*.csv
+config.local.toml
+
+# Locally derived personal artefacts
+data/derived/
+reports/private/
+notebooks/private/
+
+# Python and notebook state
+.venv/
+.validation-venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+.ipynb_checkpoints/
+
+# Environment and secret files
+.env
+.env.*
+!.env.example
