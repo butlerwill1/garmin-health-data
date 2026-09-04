@@ -467,7 +467,9 @@ def _join_daylio(nights: pd.DataFrame, config: AnalysisConfig) -> pd.DataFrame:
     return joined.merge(prior, how="left", left_on="sleep_date", right_on="calendar_date").drop(columns="calendar_date", errors="ignore")
 
 
-def load_local_sleep_analysis(config_path: str | Path = "config.local.toml") -> SleepAnalysis:
+def load_local_sleep_analysis(
+    config_path: str | Path = Path(__file__).resolve().parents[2] / "config.local.toml",
+) -> SleepAnalysis:
     """Load local Garmin and Daylio exports into the five safe sleep-analysis tables."""
     config = load_config(config_path)
     summaries = load_sleep_summaries(config.garmin_export_dir, config.timezone)

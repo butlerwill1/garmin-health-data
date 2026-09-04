@@ -1,7 +1,9 @@
 from datetime import date
+from pathlib import Path
 
 import pandas as pd
 
+import garmin_daylio_analysis.sleep as sleep_module
 from garmin_daylio_analysis.sleep import (
     derive_awakenings,
     reconstruct_timestamp_16,
@@ -12,6 +14,11 @@ from garmin_daylio_analysis.sleep import (
 
 
 UTC = "UTC"
+
+
+def test_local_sleep_analysis_defaults_to_repository_config():
+    expected = Path(sleep_module.__file__).resolve().parents[2] / "config.local.toml"
+    assert sleep_module.load_local_sleep_analysis.__defaults__ == (expected,)
 
 
 def stamp(value: str) -> pd.Timestamp:
