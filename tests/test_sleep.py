@@ -2,6 +2,7 @@ from datetime import date
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 import garmin_daylio_analysis.sleep as sleep_module
 from garmin_daylio_analysis.sleep import (
@@ -39,6 +40,24 @@ def test_uploaded_fit_returns_empty_segments_with_the_standard_schema(tmp_path):
         "start_local", "end_local", "raw_stage", "duration_minutes",
         "fit_coverage", "summary_coverage",
     ]
+
+
+def test_sleep_daylio_join_creates_daily_tag_columns(monkeypatch, tmp_path):
+    from garmin_daylio_analysis.config import AnalysisConfig
+
+    entries = pd.DataFrame({
+        "calendar_date": [date(2026, 1, 2)],
+        "local_timestamp": [pd.Timestamp("2026-01-02 08:00", tz="Europe/London")],
+        "mood_score": [4],
+        "approved_activity_tags": [("Sleeping medication",)],
+    })
+    monkeypatch.setattr(sleep_module, "load_daylio_entries", lambda *args: entries)
+    nights = pd.DataFrame({"sleep_date": [date(2026, 1, 2)]})
+    config = AnalysisConfig(tmp_path, tmp_path / "daylio.csv")
+
+    joined = sleep_module._join_daylio(nights, config)
+
+    assert joined.loc[0, "tag_sleeping_medication"] == 1
 
 
 def stamp(value: str) -> pd.Timestamp:

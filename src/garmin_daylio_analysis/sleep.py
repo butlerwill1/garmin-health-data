@@ -22,6 +22,7 @@ from statsmodels.stats.multitest import multipletests
 
 from .config import AnalysisConfig, load_config
 from .loaders import load_daylio_entries
+from .prepare import aggregate_daylio_daily
 from .privacy import assert_public_frame_safe
 
 
@@ -471,8 +472,10 @@ def derive_awakenings(scenario_timeline: pd.DataFrame) -> tuple[pd.DataFrame, pd
 
 def _join_daylio(nights: pd.DataFrame, config: AnalysisConfig) -> pd.DataFrame:
     entries = load_daylio_entries(config.daylio_export_csv, config.timezone, config.approved_activity_tags)
+    daily = aggregate_daylio_daily(entries)
     tag_columns = [column for column in entries if column.startswith("tag_")]
-    daily = entries.groupby("calendar_date", as_index=False)[tag_columns].max()
+    tag_columns = [column for column in daily if column.startswith("tag_")]
+    daily = daily[["calendar_date", *tag_columns]]
     joined = nights.merge(daily, how="left", left_on="sleep_date", right_on="calendar_date").drop(columns="calendar_date", errors="ignore")
     prior = daily.copy()
     prior.calendar_date = prior.calendar_date + pd.Timedelta(days=1)
