@@ -6,6 +6,7 @@ src/garmin_daylio_analysis/loaders.py
 src/garmin_daylio_analysis/prepare.py
 src/garmin_daylio_analysis/privacy.py
 src/garmin_daylio_analysis/quality.py
+src/garmin_daylio_analysis/sleep.py
 src/garmin_daylio_analysis/statistics.py
 src/garmin_daylio_analysis/synthetic.py
 src/garmin_daylio_analysis/workflow.py

@@ -4,6 +4,7 @@ Version: 0.1.0
 Summary: Private, reproducible association analysis for Garmin and Daylio exports.
 Requires-Python: >=3.11
 Description-Content-Type: text/markdown
+Requires-Dist: garmin-fit-sdk<22,>=21.214
 Requires-Dist: jupyterlab>=4.2
 Requires-Dist: matplotlib>=3.8
 Requires-Dist: nbclient>=0.10
