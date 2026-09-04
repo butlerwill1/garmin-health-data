@@ -58,6 +58,7 @@ def test_sleep_daylio_join_creates_daily_tag_columns(monkeypatch, tmp_path):
     joined = sleep_module._join_daylio(nights, config)
 
     assert joined.loc[0, "tag_sleeping_medication"] == 1
+    assert joined.loc[0, "mood_mean"] == 4
 
 
 def stamp(value: str) -> pd.Timestamp:

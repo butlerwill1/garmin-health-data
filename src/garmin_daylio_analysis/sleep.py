@@ -473,11 +473,11 @@ def derive_awakenings(scenario_timeline: pd.DataFrame) -> tuple[pd.DataFrame, pd
 def _join_daylio(nights: pd.DataFrame, config: AnalysisConfig) -> pd.DataFrame:
     entries = load_daylio_entries(config.daylio_export_csv, config.timezone, config.approved_activity_tags)
     daily = aggregate_daylio_daily(entries)
-    tag_columns = [column for column in entries if column.startswith("tag_")]
     tag_columns = [column for column in daily if column.startswith("tag_")]
-    daily = daily[["calendar_date", *tag_columns]]
+    mood_columns = [column for column in ("mood_mean", "mood_median", "mood_last", "checkin_count") if column in daily]
+    daily = daily[["calendar_date", *mood_columns, *tag_columns]]
     joined = nights.merge(daily, how="left", left_on="sleep_date", right_on="calendar_date").drop(columns="calendar_date", errors="ignore")
-    prior = daily.copy()
+    prior = daily[["calendar_date", *tag_columns]].copy()
     prior.calendar_date = prior.calendar_date + pd.Timedelta(days=1)
     prior = prior.rename(columns={column: f"prior_day_{column}" for column in tag_columns})
     return joined.merge(prior, how="left", left_on="sleep_date", right_on="calendar_date").drop(columns="calendar_date", errors="ignore")
