@@ -6,6 +6,7 @@ import pandas as pd
 import garmin_daylio_analysis.sleep as sleep_module
 from garmin_daylio_analysis.sleep import (
     _decode_uploaded_fit,
+    _is_sleep_file_type,
     derive_awakenings,
     reconstruct_timestamp_16,
     scenario_segments,
@@ -15,6 +16,12 @@ from garmin_daylio_analysis.sleep import (
 
 
 UTC = "UTC"
+
+
+def test_numeric_garmin_type_49_is_recognised_as_a_sleep_file():
+    assert _is_sleep_file_type("49")
+    assert _is_sleep_file_type("sleep")
+    assert not _is_sleep_file_type("monitoring_b")
 
 
 def test_local_sleep_analysis_defaults_to_repository_config():

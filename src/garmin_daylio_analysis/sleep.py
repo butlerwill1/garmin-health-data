@@ -168,6 +168,15 @@ def _fit_type(messages: dict[str, list[dict[str, object]]]) -> str | None:
     return None
 
 
+def _is_sleep_file_type(kind: str | None) -> bool:
+    """Return whether a FIT file contains Garmin sleep-stage transitions.
+
+    Garmin exports label these files as numeric Type 49. Some decoder versions
+    translate that enum to ``sleep`` while others retain the numeric value.
+    """
+    return kind in {"sleep", "49"}
+
+
 def _uploaded_archives(export_dir: str | Path) -> list[Path]:
     return sorted(Path(export_dir).rglob("UploadedFiles*.zip"))
 
@@ -295,7 +304,7 @@ def _decode_uploaded_fit(export_dir: str | Path, summaries: pd.DataFrame, timezo
                 kind = str(file_id.get("type")) if file_id else None
                 created = _as_utc(file_id.get("time_created")) if file_id else pd.NaT
                 created_date = _local(created, timezone_name).date() if not pd.isna(created) else None
-                if kind not in {"sleep", "monitoring_b"}:
+                if not _is_sleep_file_type(kind) and kind != "monitoring_b":
                     continue
                 # Monitoring files are daily chunks. A one-day margin captures an overnight
                 # window while avoiding a costly decode of unrelated all-day files.
@@ -305,7 +314,7 @@ def _decode_uploaded_fit(export_dir: str | Path, summaries: pd.DataFrame, timezo
                     messages = _decode_fit(data)
                 except Exception:
                     continue
-                if kind == "sleep":
+                if _is_sleep_file_type(kind):
                     rows, summary = transition_messages_to_segments(messages.get("sleep_level_mesgs", []), summaries, timezone_name, sleep_id)
                     if rows:
                         segment_rows.extend(rows)
