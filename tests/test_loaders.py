@@ -110,3 +110,19 @@ def test_load_garmin_activities_accepts_single_export_wrapper(tmp_path):
     activities = load_garmin_activities(tmp_path)
     assert len(activities) == 1
     assert activities.loc[0, "activity_type"] == "cycling"
+
+
+def test_load_garmin_activities_allows_exports_without_activity_summary(tmp_path):
+    activities = load_garmin_activities(tmp_path)
+
+    assert activities.empty
+    assert activities.columns.tolist() == [
+        "calendar_date",
+        "activity_type",
+        "activity_count",
+        "duration_seconds",
+        "distance_m",
+        "calories",
+        "average_heart_rate",
+        "maximum_heart_rate",
+    ]

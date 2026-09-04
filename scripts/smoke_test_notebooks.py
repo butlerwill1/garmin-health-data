@@ -1,7 +1,8 @@
-"""Execute every tracked notebook in memory against the synthetic default data."""
+"""Execute every tracked notebook in memory using the local configured inputs."""
 
 from __future__ import annotations
 
+import asyncio
 import sys
 from pathlib import Path
 
@@ -10,6 +11,8 @@ from nbclient import NotebookClient
 
 
 def main() -> int:
+    if sys.platform == "win32":
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     root = Path(__file__).resolve().parents[1]
     notebook_paths = sorted((root / "notebooks").glob("*.ipynb"))
     if not notebook_paths:

@@ -163,18 +163,24 @@ def _activity_type(value: Any) -> str:
     return "other"
 
 
-def _find_activity_file(path: Path) -> Path:
+def _find_activity_file(path: Path) -> Path | None:
     if path.is_file():
         return path
     candidates = sorted(path.rglob("*_0_summarizedActivities.json"))
     if not candidates:
-        raise FileNotFoundError("No Garmin summarised-activities file was found.")
+        return None
     return candidates[0]
 
 
 def load_garmin_activities(export_dir: str | Path, timezone: str = "Europe/London") -> pd.DataFrame:
-    """Load generic daily activity aggregates without activity names or locations."""
+    """Load generic daily activity aggregates without activity names or locations.
+
+    Some Garmin exports do not include a summarised-activities file. In that
+    case, return the expected empty table so daily analysis can still proceed.
+    """
     activity_file = _find_activity_file(Path(export_dir))
+    if activity_file is None:
+        return pd.DataFrame(columns=ACTIVITY_COLUMNS)
     with activity_file.open(encoding="utf-8") as handle:
         raw = json.load(handle)
     if isinstance(raw, dict):
