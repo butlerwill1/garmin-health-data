@@ -7,6 +7,7 @@ config.local.toml
 data/derived/
 reports/private/
 notebooks/private/
+input/
 
 # Python and notebook state
 .venv/

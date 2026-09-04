@@ -49,7 +49,7 @@ def test_sleep_daylio_join_creates_daily_tag_columns(monkeypatch, tmp_path):
         "calendar_date": [date(2026, 1, 2)],
         "local_timestamp": [pd.Timestamp("2026-01-02 08:00", tz="Europe/London")],
         "mood_score": [4],
-        "approved_activity_tags": [("Sleeping medication",)],
+        "approved_activity_tags": [("Example tag",)],
     })
     monkeypatch.setattr(sleep_module, "load_daylio_entries", lambda *args: entries)
     nights = pd.DataFrame({"sleep_date": [date(2026, 1, 2)]})
@@ -57,7 +57,7 @@ def test_sleep_daylio_join_creates_daily_tag_columns(monkeypatch, tmp_path):
 
     joined = sleep_module._join_daylio(nights, config)
 
-    assert joined.loc[0, "tag_sleeping_medication"] == 1
+    assert joined.loc[0, "tag_example_tag"] == 1
     assert joined.loc[0, "mood_mean"] == 4
 
 
