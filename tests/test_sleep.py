@@ -5,6 +5,7 @@ import pandas as pd
 
 import garmin_daylio_analysis.sleep as sleep_module
 from garmin_daylio_analysis.sleep import (
+    _decode_uploaded_fit,
     derive_awakenings,
     reconstruct_timestamp_16,
     scenario_segments,
@@ -19,6 +20,18 @@ UTC = "UTC"
 def test_local_sleep_analysis_defaults_to_repository_config():
     expected = Path(sleep_module.__file__).resolve().parents[2] / "config.local.toml"
     assert sleep_module.load_local_sleep_analysis.__defaults__ == (expected,)
+
+
+def test_uploaded_fit_returns_empty_segments_with_the_standard_schema(tmp_path):
+    summaries = pd.DataFrame(columns=["sleep_date"])
+
+    segments, _, _ = _decode_uploaded_fit(tmp_path, summaries, "Europe/London")
+
+    assert segments.columns.tolist() == [
+        "segment_id", "sleep_id", "sleep_date", "start_utc", "end_utc",
+        "start_local", "end_local", "raw_stage", "duration_minutes",
+        "fit_coverage", "summary_coverage",
+    ]
 
 
 def stamp(value: str) -> pd.Timestamp:

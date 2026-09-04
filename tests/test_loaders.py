@@ -5,7 +5,24 @@ import json
 import pandas as pd
 import pytest
 
+from garmin_daylio_analysis.config import load_config
 from garmin_daylio_analysis.loaders import load_daylio_entries, load_garmin_activities, load_garmin_daily
+
+
+def test_config_resolves_relative_source_paths_from_its_own_folder(tmp_path, monkeypatch):
+    config_path = tmp_path / "config.local.toml"
+    config_path.write_text(
+        "[paths]\ngarmin_export_dir = 'input/garmin'\ndaylio_export_csv = 'input/daylio.csv'\n",
+        encoding="utf-8",
+    )
+    other_folder = tmp_path / "other"
+    other_folder.mkdir()
+    monkeypatch.chdir(other_folder)
+
+    config = load_config(config_path)
+
+    assert config.garmin_export_dir == tmp_path / "input" / "garmin"
+    assert config.daylio_export_csv == tmp_path / "input" / "daylio.csv"
 
 
 def test_load_daylio_keeps_only_safe_fields_and_approved_tags(tmp_path):

@@ -318,7 +318,11 @@ def _decode_uploaded_fit(export_dir: str | Path, summaries: pd.DataFrame, timezo
                     frame = decode_monitoring_fit(messages)
                     if not frame.empty:
                         signal_frames.append(frame)
-    segments = pd.DataFrame(segment_rows)
+    segments = pd.DataFrame(segment_rows) if segment_rows else _empty([
+        "segment_id", "sleep_id", "sleep_date", "start_utc", "end_utc",
+        "start_local", "end_local", "raw_stage", "duration_minutes",
+        "fit_coverage", "summary_coverage",
+    ])
     signals = pd.concat(signal_frames, ignore_index=True, sort=False) if signal_frames else _empty(["timestamp_utc", "heart_rate", "respiration_rate", "stress_level"])
     if not signals.empty:
         signals = signals.groupby("timestamp_utc", as_index=False).last().sort_values("timestamp_utc")

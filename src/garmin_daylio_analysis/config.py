@@ -22,16 +22,20 @@ class AnalysisConfig:
 
 def load_config(path: str | Path = "config.local.toml") -> AnalysisConfig:
     """Read a local TOML file without ever loading free-text export fields."""
-    config_path = Path(path)
+    config_path = Path(path).resolve()
     with config_path.open("rb") as handle:
         raw = tomllib.load(handle)
 
     paths = raw["paths"]
     analysis = raw.get("analysis", {})
     daylio = raw.get("daylio", {})
+    def resolve_source_path(value: str) -> Path:
+        source_path = Path(value)
+        return source_path if source_path.is_absolute() else config_path.parent / source_path
+
     return AnalysisConfig(
-        garmin_export_dir=Path(paths["garmin_export_dir"]),
-        daylio_export_csv=Path(paths["daylio_export_csv"]),
+        garmin_export_dir=resolve_source_path(paths["garmin_export_dir"]),
+        daylio_export_csv=resolve_source_path(paths["daylio_export_csv"]),
         timezone=analysis.get("timezone", "Europe/London"),
         approved_activity_tags=tuple(daylio.get("approved_activity_tags", [])),
         min_observations=int(analysis.get("min_observations", 60)),
